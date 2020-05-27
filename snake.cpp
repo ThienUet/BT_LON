@@ -16,6 +16,9 @@ Snake::Snake()
   sprites = SDL_CreateTextureFromSurface(renderer, surface);
   SDL_CHECK(sprites, "SDL_CreateTextureFromSurface");
   SDL_FreeSurface(surface);
+  Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2 , 2048);
+backgroundMusic = Mix_LoadMUS("C:/Users/Admin/Desktop/BT_GAME/Themesong.mp3");
+Eat = Mix_LoadWAV("C:/Users/Admin/Desktop/BT_GAME/EatSound.wav");
 
   // them doan than vao dot sau cung cua con ran
   segmentsList.push_back(std::make_pair(5, 5));
@@ -51,11 +54,14 @@ Snake::~Snake()
 {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
+  Mix_FreeMusic(backgroundMusic);
+  Mix_CloseAudio();
   SDL_Quit();
 }
 
 int Snake::exec()
 {
+    Mix_PlayMusic(backgroundMusic, -1);
   auto oldTick = SDL_GetTicks();
   for (auto done = false; !done;)
   {
@@ -132,10 +138,13 @@ bool Snake::tick()
     segmentsList.push_front(p);
     if (p.first != fruitX || p.second != fruitY) // neu
     {
-      segmentsList.pop_back(); // neu ko truyen vao bien p thi giu ngiuyen
+      segmentsList.pop_back();
     }
     else
+    {
+          Mix_PlayChannel(-1, Eat, 0);
       generateFruit();
+    }
   }
   return true;
 }
@@ -171,7 +180,6 @@ void Snake::draw()
       }
       else
          src.x = HeadOpenMouth * 64;
-       // k mo mom
       if (iter + 1 != std::end(segmentsList))
       {
         const auto &nextSegment = *(iter + 1);
