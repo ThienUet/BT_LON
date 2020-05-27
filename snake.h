@@ -33,4 +33,6 @@ private:
   void generateFruit();
   Audio effect;
   int speed = 300;
+  Mix_Music *backgroundMusic;
+  Mix_Chunk *Eat;
 };
